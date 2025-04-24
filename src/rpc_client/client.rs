@@ -8,11 +8,10 @@ pub struct BitcoinRpcClient {
 }
 
 impl BitcoinRpcClient {
-    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
-        let rpc_url = "http://192.168.3.89:18443";
+    pub fn new(rpc_url: &str, username: &str, password: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let auth = Auth::UserPass(
-            "test".to_string(),
-            "test".to_string(),
+            username.to_string(),
+            password.to_string(),
         );
 
         let client = Client::new(rpc_url, auth)?;
@@ -24,12 +23,13 @@ impl BitcoinRpcClient {
         &self.client
     }
 
-    #[allow(dead_code)]
+    
     pub fn submit_transaction(&self, transaction: &Transaction) -> Result<String, Box<dyn std::error::Error>> {
         let txid = self.client.send_raw_transaction(transaction)?;
         Ok(txid.to_string())
     }
 
+    #[allow(dead_code)]
     pub fn submit_package(&self, transactions: &[Transaction]) -> Result<Value, Box<dyn std::error::Error>> {
         // Convert transactions to hex strings
         let tx_hexes: Vec<String> = transactions
